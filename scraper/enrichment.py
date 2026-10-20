@@ -1103,8 +1103,9 @@ def rule_based_enrich(record):
             record["available_date"] = date.today().isoformat()
         # Otherwise leave as None — don't mislead with today's date
 
-    # 3. Default security_deposit to 1x rent if missing
-    if not record.get("security_deposit"):
+    # 3. Default security_deposit to 1x rent only when the source does not
+    # provide any value; never overwrite explicit source facts.
+    if record.get("security_deposit") in (None, "", 0):
         rent = record.get("monthly_rent")
         if rent and isinstance(rent, (int, float)) and rent > 0:
             record["security_deposit"] = int(rent)
